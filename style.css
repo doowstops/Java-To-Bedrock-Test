@@ -1,0 +1,27 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 50px;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+form {
+    margin: 20px;
+}
+
+input, button {
+    padding: 10px;
+    font-size: 16px;
+}
+
+#responseMessage {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #e0ffe0;
+    border: 1px solid #d4edda;
+    display: inline-block;
+    max-width: 80%;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+}
