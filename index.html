@@ -9,9 +9,9 @@
 <body>
     <h1>Java Datapack to Bedrock Behavior Pack Converter</h1>
     <form id="uploadForm">
-        <label for="fileInput">Upload Java Datapack:</label>
+        <label for="fileInput">Upload Java Datapack (.json or .mcfunction):</label>
         <input type="file" id="fileInput" name="file" required>
-        <button type="button" onclick="uploadFile()">Convert</button>
+        <button type="button" onclick="processFile()">Convert</button>
     </form>
     <div id="responseMessage"></div>
     <script src="script.js"></script>
