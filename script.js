@@ -1,31 +1,65 @@
-async function uploadFile() {
+async function processFile() {
     const fileInput = document.getElementById('fileInput');
     const file = fileInput.files[0];
+
     if (!file) {
         alert('Please select a file to upload!');
         return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-        const response = await fetch('<BACKEND_API_URL>/upload', { // Replace <BACKEND_API_URL> with your backend's URL
-            method: 'POST',
-            body: formData
-        });
-
-        const result = await response.json();
-        if (result.status === 'success') {
-            document.getElementById('responseMessage').innerText = 
-                'Conversion Successful! Here is the result:\n' + JSON.stringify(result.data, null, 2);
-        } else {
-            document.getElementById('responseMessage').innerText = 
-                'Error: ' + result.message;
-        }
-    } catch (error) {
-        console.error('Error during upload:', error);
-        document.getElementById('responseMessage').innerText = 
-            'An error occurred. Please try again.';
+    if (!(file.name.endsWith('.json') || file.name.endsWith('.mcfunction'))) {
+        alert('Please upload a valid .json or .mcfunction file!');
+        return;
     }
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+        const fileContent = event.target.result;
+        
+        try {
+            // Detect file type and process accordingly
+            let convertedContent;
+            if (file.name.endsWith('.json')) {
+                convertedContent = convertJson(fileContent);
+            } else if (file.name.endsWith('.mcfunction')) {
+                convertedContent = convertMcFunction(fileContent);
+            }
+            
+            document.getElementById('responseMessage').innerText = 
+                'Conversion Successful! Here is the result:\n' + convertedContent;
+
+        } catch (error) {
+            console.error('Error during file processing:', error);
+            alert('An error occurred during conversion. Please check the file format.');
+        }
+    };
+
+    reader.readAsText(file);
+}
+
+function convertJson(jsonContent) {
+    const javaData = JSON.parse(jsonContent);
+    const bedrockData = {};
+    
+    for (const key in javaData) {
+        bedrockData[key.replace('criteria', 'goals').replace('trigger', 'event')] = javaData[key];
+    }
+
+    return JSON.stringify(bedrockData, null, 2);
+}
+
+function convertMcFunction(mcfunctionContent) {
+    const mappings = {
+        "execute as": "execute @",
+        "if score": "if entity",
+        // Add more mappings here...
+    };
+
+    let convertedContent = mcfunctionContent;
+    for (const java in mappings) {
+        convertedContent = convertedContent.replace(new RegExp(java, 'g'), mappings[java]);
+    }
+
+    return convertedContent;
 }
